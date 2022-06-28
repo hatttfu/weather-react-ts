@@ -1,63 +1,90 @@
 import React from 'react';
 import searchIcon from './images/search.png';
-import sunIcon from './images/sun.png'
+
+import axios from 'axios';
+
+import Display from './components/Display';
+import WeatherProps from './types';
+
+import Sidebar from './components/Sidebar';
+
+
+const ACCESS_KEY = 'e0d9500c34095c04abb628112a4c4ccb';
 
 function App() {
-  return (
-    <div className="App">
-      <div className="container">
-          <header className="header">
-              the.weather
-          </header>
-          <main className="main">
-              <div className="info-block">
-                  <div className="temperature">52°</div>
-                  <div className="place-time">
-                      <div className="place">London</div>
-                      <div className="time-info">
-                          <div className="time">10:36 </div>-
-                          <div className="weekday">Tuesday</div>
-                          <div className="date">22 Oct '19</div>
-                      </div>
-                  </div>
-                  <div className="description">
-                      <div className="icon">
-                          <img src={sunIcon} alt="" />
-                      </div>
-                      <div className="icon-info">
-                          Sunny
-                      </div>
-                  </div>
-              </div>
-          </main>
-          <div className="search">
-              <button className="search-button">
-                  <img src={searchIcon} alt="Check weather" />
-              </button>
-              <div className="form">
-                  <input type="search" placeholder="Type city here..." className="search-town" />
-                  <div className="details">
-                      <h3>Weather Details</h3>
-                      <div className="weather-block">
-                          <div>
-                              <div className="name">Cloudy</div>
-                              <div className="value">12%</div>
-                          </div>
-                          <div>
-                              <div className="name">Cloudy</div>
-                              <div className="value">12%</div>
-                          </div>
-                          <div>
-                              <div className="name">Cloudy</div>
-                              <div className="value">12%</div>
-                          </div>
-                      </div>
-                  </div>
-              </div>
-          </div>
-      </div>
-    </div>
-  );
+
+
+
+    const [weather, setWeather] = React.useState<WeatherProps | {}>({})
+
+    console.log('weather ', weather)
+
+    
+
+    React.useEffect(() => {
+        getWeather()
+    }, [])
+
+    async function getWeather() {
+        const response = await axios.get(`http://api.weatherstack.com/current?access_key=${ACCESS_KEY}&query=New York`);
+
+        sortWeather(response.data.current)
+    }
+
+    function sortWeather(data: any) {
+
+        console.log(data);
+
+        
+        const {
+            cloudcover, 
+            humidity,
+            precip, 
+            pressure,
+            visibility,
+            wind_speed: windSpeed,
+            
+            observation_time: time,  
+            temperature,  
+            weather_descriptions: description, weather_icons: icons } = data;
+
+        let weatherData = {};
+        
+        weatherData = {
+            cloudcover, 
+            humidity,
+            precip, 
+            pressure,
+            visibility,
+            windSpeed,
+            
+            time,  
+            temperature,  
+            description, 
+            icons
+        }
+        
+        setWeather(weatherData)
+
+    }
+    
+    return (
+        
+        <div className="App">
+        <div className="container">
+            <header className="header">
+                the.weather
+            </header>
+            <main className="main">
+                
+                <Display  weather={weather}/>
+            </main>
+            <div className="search">
+                <Sidebar />
+            </div>
+        </div>
+        </div>
+    );
 }
 
 export default App;
