@@ -7,12 +7,15 @@ import {WeatherProps} from './types';
 
 import Sidebar from './components/Sidebar';
 
-
 // const ACCESS_KEY = 'e0d9500c34095c04abb628112a4c4ccb';
 const ACCESS_KEY = '8f37d29f73838c7d8ca43e1ecf4df785';
 
+const url = "https://suggestions.dadata.ru/suggestions/api/4_1/rs/geolocate/address";
+const token = "caa63103f98ae9cd6b61d17708ad1f6eaf94bc00";
+
 function App() {
 
+    
     let initialWeather:WeatherProps = {
         cloudcover: 0,
         humidity: 0,
@@ -26,13 +29,63 @@ function App() {
         windSpeed: 0
     }
 
+
+    //isLoaded state
+    const [isLoaded, setLoaded] = React.useState<boolean>(false);
+
     const [weather, setWeather] = React.useState<WeatherProps>(initialWeather)
 
     console.log('weather ', weather)
 
+    const [city, setCity] = React.useState<string>("");
+
+    function getCoordinates(position: any) {
+        const { coords: { latitude: lat, longitude: lon} } = position;
+        const query = {
+            lat,
+            lon
+        } 
+        console.log('query ', query)
+        getPlace(query)
+    }
+    
+    React.useEffect(() => {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position) => getCoordinates(position));
+        }
+    }, [])
+    
+    
+    function getCity(result: any) {
+        const string = result.suggestions[0].value;
+    
+        let city = string.match(/[^,]*/)[0];
+        city = city.slice(2,)
+
+        getWeather(city)
+        
+    }
+    
+    function getPlace(query: any) {
+        fetch(url, {
+            method: "POST",
+            mode: "cors",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "Authorization": "Token " + token
+            },
+            body: JSON.stringify(query)
+        })
+            .then(response => response.json())
+            .then(result => getCity(result))
+            .catch(error => console.log("error", error));
+    }
+    
     const onEnterPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
         const key = event.keyCode || event.key;
         if (key === 13) {
+            setLoaded(false)
             //без as не получалось, взяла со стаковерфлоу
             const value = (event.target as HTMLInputElement).value;
             console.log(value);
@@ -44,6 +97,8 @@ function App() {
         const response = await axios.get(`http://api.weatherstack.com/current?access_key=${ACCESS_KEY}&query=${city}`);
         console.log(response)
         sortWeather(response.data.current)
+        setLoaded(true)
+        setCity(city)
     }
 
     function sortWeather(data: any) {
@@ -92,10 +147,10 @@ function App() {
             </header>
             <main className="main">
                 
-                {weather && <Display  weather={weather}/>}
+                <Display  weather={weather} city={city} isLoaded={isLoaded}/>
             </main>
             <div className="search">
-                {weather && <Sidebar  weather={weather} onEnterPress={onEnterPress}/>}
+                <Sidebar  weather={weather} onEnterPress={onEnterPress} isLoaded={isLoaded}/>
                 
             </div>
         </div>

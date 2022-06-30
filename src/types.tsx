@@ -13,5 +13,12 @@ export interface WeatherProps {
 
 export interface SidebarProps {
     weather: WeatherProps,
-    onEnterPress: (event: React.KeyboardEvent<HTMLInputElement>) => void
+    onEnterPress: (event: React.KeyboardEvent<HTMLInputElement>) => void,
+    isLoaded: boolean
+}
+
+export interface DisplayProps {
+    weather: WeatherProps,
+    city: string,
+    isLoaded: boolean
 }

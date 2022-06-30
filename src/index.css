@@ -12,17 +12,10 @@ body {
     background-repeat: no-repeat;
     background-attachment: fixed;
     background-size: cover;
-    background-color: rgb(108, 162, 255);
+    background-color: #fed8f4;
     height: 100%;
     font-family: 'Titan One', cursive;
 }
-
-
-/* @media screen and (max-width: 1289px){
-    body {
-        background-image: url(/images/sky-small.webp)
-    }
-} */
 
 .container {
     padding: 20px 5px 50px 20px;
@@ -34,23 +27,39 @@ body {
 
 .info-block {
     display: flex;
+    flex-direction: column;
     min-width: 500px;
     width: 45%;
     justify-content: space-around;
+    padding-left: 50px;
+}
+
+.date-icon, .info-main {
+    display: flex;
     align-items: center;
 }
 
 .temperature {
-    font-size: 62px;
+    font-size: 78px;
+}
+
+.icon-info {
+    font-size: 42px;
+    margin-left: 15px;
 }
 
 .time-info {
     display: flex;
 }
 
+.place-time {
+    font-size: 24px;
+}
+
 .place-time, .description {
     display: flex;
     flex-direction: column;
+
 }
 
 .date {
@@ -127,5 +136,14 @@ h3 {
     align-items: center;
     padding-right: 20px;
     margin-bottom: 15px;
+}
+
+.description .icon img {
+    border: 7px solid rgba(125, 54, 125, 0.267);
+}
+
+.description {
+    align-items: center;
+    margin-left: 30px;
 }
 
